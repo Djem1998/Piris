@@ -26,23 +26,29 @@ class CreateUserInformationsTable extends Migration
             $table->date('issue_date');
             $table->string('identification_number', 30);
             $table->string('birthplace', 30);
-            $table->string('residence_city', 30);
+            $table->unsignedInteger('residence_cities_id');
             $table->string('address', 40);
             $table->string('home_phone', 20)->nullable();
             $table->string('mobile_phone', 20)->nullable();
             $table->string('email', 50)->nullable();
             $table->string('job', 50)->nullable();
             $table->string('position', 50)->nullable();
-            $table->string('registration_city', 30);
-            $table->string('family_position', 20);
-            $table->string('citizenship');
-            $table->string('disability', 20);
+            $table->unsignedInteger('registration_cities_id');
+            $table->unsignedInteger('family_positions_id');
+            $table->unsignedInteger('citizenships_id');
+            $table->unsignedInteger('disabilities_id');
             $table->string('pensioner', 5);
             $table->string('monthly_income', 50)->nullable();
             $table->timestamps();
 
             $table->unique(["id"], 'id_user_informations_UNIQUE');
             $table->unique(["identification_number"], 'identification_number_user_informations_UNIQUE');
+
+            $table->foreign('residence_cities_id')->references('id')->on('residence_cities')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('registration_cities_id')->references('id')->on('registration_cities')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('family_positions_id')->references('id')->on('family_positions')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('citizenships_id')->references('id')->on('citizenships')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('disabilities_id')->references('id')->on('disabilities')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
