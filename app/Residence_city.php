@@ -8,7 +8,9 @@ class Residence_city extends Model
 {
     protected $table = 'residence_cities';
     protected $primaryKey = 'id';
-    protected $fillable = 'name';
+    protected $fillable = [
+        'name'
+    ];
 
     public function user_information()
     {

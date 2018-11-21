@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <form method="post" action="">
+        <form method="post" action="#">
             @csrf
             <div class="string">
                 <div class="form-group col-md-6">
@@ -142,6 +142,55 @@
                            class="col-md-12 col-form-label text-md-center">{{ __('Monthly Income') }}</label>
                     <input name="monthly_income" id="monthly_income" class="form-control" type="text"
                            pattern="\d+,\d{2}">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="citizenship"
+                           class="col-md-12 col-form-label text-md-center">{{ __('Citizenship') }}</label>
+                    <select name="citizenship" id="citizenship" class="form-control">
+                        @foreach($citizenships as $item)
+                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="string">
+                <div class="form-group col-md-6">
+                    <label for="residence_city"
+                           class="col-md-12 col-form-label text-md-center">{{ __('Residence City') }}</label>
+                    <select name="residence_city" id="residence_city" class="form-control">
+                        @foreach($residence_cities as $item)
+                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="registration_city"
+                           class="col-md-12 col-form-label text-md-center">{{ __('Registration City') }}</label>
+                    <select name="registration_city" id="registration_city" class="form-control">
+                        @foreach($registration_cities as $item)
+                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="string">
+                <div class="form-group col-md-6">
+                    <label for="family_position"
+                           class="col-md-12 col-form-label text-md-center">{{ __('Family Positions') }}</label>
+                    <select name="family_position" id="family_position" class="form-control">
+                        @foreach($family_positions as $item)
+                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="disability"
+                           class="col-md-12 col-form-label text-md-center">{{ __('Disability') }}</label>
+                    <select name="disability" id="disability" class="form-control">
+                        @foreach($disabilities as $item)
+                            <option value="{{ $item['id'] }}">{{ $item['name'] }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <button class="button form-control btn-success" type="submit">Submit</button>
