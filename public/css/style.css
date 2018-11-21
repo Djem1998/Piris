@@ -1,0 +1,29 @@
+.string {
+    display: inline-flex;
+    width: 100%;
+}
+
+.radio {
+    display: inline-block;
+}
+
+.radio-label {
+    padding-left: 5px;
+}
+
+.button {
+    position: absolute;
+    left: 50%;
+    width: 40%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    transform: translate(-50%);
+}
+.pick-sex{
+    display: flex;
+    justify-content: space-evenly;
+}
+.pick-pensioner{
+    display: flex;
+    justify-content: space-evenly;
+}

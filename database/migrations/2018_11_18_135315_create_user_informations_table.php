@@ -18,9 +18,9 @@ class CreateUserInformationsTable extends Migration
             $table->string('first_name', 20);
             $table->string('last_name', 20);
             $table->string('father_name', 20);
-            $table->dateTime('birthday');
+            $table->date('birthday');
             $table->string('sex', 6);
-            $table->string('passport_series', 10);
+            $table->string('passport_series', 3);
             $table->string('passport_id', 10);
             $table->string('issued_by', 40);
             $table->date('issue_date');
@@ -38,7 +38,7 @@ class CreateUserInformationsTable extends Migration
             $table->unsignedInteger('citizenships_id');
             $table->unsignedInteger('disabilities_id');
             $table->string('pensioner', 5);
-            $table->string('monthly_income', 50)->nullable();
+            $table->decimal('monthly_income', 10, 2)->nullable();
             $table->timestamps();
 
             $table->unique(["id"], 'id_user_informations_UNIQUE');
