@@ -55,3 +55,7 @@ input {
 .error{
     border-color: red;
 }
+.active{
+    background-color: #0765f2;
+    box-shadow: none;
+}

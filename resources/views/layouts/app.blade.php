@@ -39,13 +39,13 @@
                 <ul class="navbar-nav ml-auto">
                     <!-- Authentication Links -->
                     <li class="nav-item">
-                        <a class="nav-link menu-button" href="{{ route('addUser') }}">{{ __('Add User') }}</a>
+                        <a class="nav-link menu-button" href="{{ route('addUser') }}" id="addUser">{{ __('Add User') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link menu-button" href="#">{{ __('Editing User') }}</a>
+                        <a class="nav-link menu-button" href="#" id="editingUser">{{ __('Editing User') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link menu-button" href="#">{{ __('Delete User') }}</a>
+                        <a class="nav-link menu-button" href="#" id="deleteUser">{{ __('Delete User') }}</a>
                     </li>
                 </ul>
             </div>

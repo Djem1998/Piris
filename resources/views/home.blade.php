@@ -4,6 +4,26 @@
     <div class="container">
         <form method="post" action="{{ route('add') }}">
             @csrf
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            @if(isset($message))
+                @if($message == 'User is add into database.')
+                    <script>
+                        swal('Success', 'User is add into database.', 'success')
+                    </script>
+                    @else
+                    <script>
+                        swal('Error', 'Something went wrong.', 'error')
+                    </script>
+                @endif
+            @endif
             <div class="string">
                 <div class="form-group col-md-6">
                     <label for="first_name"
@@ -95,13 +115,13 @@
                     <label for="home_phone"
                            class="col-md-12 col-form-label text-md-center">{{ __('Home Phone') }}</label>
                     <input name="home_phone" id="home_phone" class="form-control" type="tel" max="20"
-                           placeholder="+375(___)___-__-__">
+                           placeholder="+375 (__) ___-__-__">
                 </div>
                 <div class="form-group col-md-6">
                     <label for="mobile_phone"
                            class="col-md-12 col-form-label text-md-center">{{ __('Mobile Phone') }}</label>
                     <input name="mobile_phone" id="mobile_phone" class="form-control" type="text" max="20"
-                           placeholder="+375(___)___-__-__">
+                           placeholder="+375 (__) ___-__-__">
                 </div>
             </div>
             <div class="string">
