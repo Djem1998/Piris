@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <form method="post" action="#">
+        <form method="post" action="{{ route('add') }}">
             @csrf
             <div class="string">
                 <div class="form-group col-md-6">

@@ -12,5 +12,9 @@
 */
 
 Auth::routes();
-
-Route::get('/', 'HomeController@index')->name('home');
+Route::get('/', 'WelcomeController@index')->name('welcome');
+Route::get('/addUser', 'HomeController@index')->name('addUser');
+Route::post('/add', 'UserInfoController@add')->name('add');
+Route::post('/checkUser', 'UserInfoController@checkUserName')->name('checkUser');
+Route::post('/checkUserPassport', 'UserInfoController@checkUserPassport')->name('checkUserPassport');
+Route::post('/checkIdentificationNumber', 'UserInfoController@checkIdentificationNumber')->name('checkIdentificationNumber');
