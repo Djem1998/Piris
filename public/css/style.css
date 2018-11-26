@@ -14,10 +14,15 @@
 .button {
     position: absolute;
     left: 50%;
-    width: 40%;
+    height: 7%;
+    width: 30%;
     margin-top: 20px;
     margin-bottom: 20px;
     transform: translate(-50%);
+    color: #fff;
+    background-color: #38c172;
+    border-color: #38c172;
+    font-size: 25px;
 }
 .pick-sex{
     display: flex;
@@ -58,4 +63,14 @@ input {
 .active{
     background-color: #0765f2;
     box-shadow: none;
+}
+.delete-select{
+    font-size: 30px;
+    padding-top: 5%;
+    padding-bottom: 2%;
+}
+.empty{
+    font-size: 50px;
+    padding-top: 30%;
+    color: darkred;
 }

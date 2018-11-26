@@ -13,17 +13,6 @@
                     </ul>
                 </div>
             @endif
-            @if(isset($message))
-                @if($message == 'User is add into database.')
-                    <script>
-                        swal('Success', 'User is add into database.', 'success')
-                    </script>
-                    @else
-                    <script>
-                        swal('Error', 'Something went wrong.', 'error')
-                    </script>
-                @endif
-            @endif
             <div class="string">
                 <div class="form-group col-md-6">
                     <label for="first_name"
@@ -213,7 +202,7 @@
                     </select>
                 </div>
             </div>
-            <button class="button form-control btn-success" type="submit">Submit</button>
+            <button class="button form-control btn-success" type="submit">Add User</button>
         </form>
     </div>
 @endsection

@@ -33,7 +33,7 @@ class UserInfoController extends Controller
                 'home_phone' => 'phone|size:19',
                 'mobile_phone' => 'phone|size:19',
             ])->validate();
-        } elseif($request->home_phone == null && $request->mobile_phone == null){
+        } elseif ($request->home_phone == null && $request->mobile_phone == null) {
             Validator::make($request->all(), [
                 'first_name' => 'required|alpha',
                 'last_name' => 'required|alpha',
@@ -54,7 +54,7 @@ class UserInfoController extends Controller
                 'family_position' => 'required',
                 'disability' => 'required',
             ])->validate();
-        } elseif ($request->home_phone != null && $request->mobile_phone == null){
+        } elseif ($request->home_phone != null && $request->mobile_phone == null) {
             Validator::make($request->all(), [
                 'first_name' => 'required|alpha',
                 'last_name' => 'required|alpha',
@@ -76,7 +76,7 @@ class UserInfoController extends Controller
                 'disability' => 'required',
                 'home_phone' => 'phone|size:19',
             ])->validate();
-        } elseif ($request->home_phone == null && $request->mobile_phone != null){
+        } elseif ($request->home_phone == null && $request->mobile_phone != null) {
             Validator::make($request->all(), [
                 'first_name' => 'required|alpha',
                 'last_name' => 'required|alpha',
@@ -127,10 +127,10 @@ class UserInfoController extends Controller
             $userInfo->pensioner = $request->pensioner;
             $userInfo->monthly_income = $request->monthly_income;
             $userInfo->save();
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $message = 'Something went wrong.';
         } finally {
-            return redirect()->route('addUser')->with('message', $message);
+            return redirect()->route('welcome')->with('message', $message);
         }
     }
 
@@ -154,13 +154,14 @@ class UserInfoController extends Controller
                 $message = 'true';
             }
         } catch (\Exception $exception) {
-            $message = 'Something went wrong.Error with code: '.$exception->getCode();
+            $message = 'Something went wrong.Error with code: ' . $exception->getCode();
         } finally {
             return $message;
         }
     }
 
-    public function checkUserPassport(Request $request){
+    public function checkUserPassport(Request $request)
+    {
         try {
             $result = array();
             $i = 0;
@@ -179,13 +180,14 @@ class UserInfoController extends Controller
                 $message = 'true';
             }
         } catch (\Exception $exception) {
-            $message = 'Something went wrong.Error with code: '.$exception->getCode();
+            $message = 'Something went wrong.Error with code: ' . $exception->getCode();
         } finally {
             return $message;
         }
     }
 
-    public function checkIdentificationNumber(Request $request){
+    public function checkIdentificationNumber(Request $request)
+    {
         try {
             $result = array();
             $i = 0;
@@ -204,9 +206,21 @@ class UserInfoController extends Controller
                 $message = 'true';
             }
         } catch (\Exception $exception) {
-            $message = 'Something went wrong.Error with code: '.$exception->getCode();
+            $message = 'Something went wrong.Error with code: ' . $exception->getCode();
         } finally {
             return $message;
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        $message = 'Delete successful';
+        try {
+            UserInformation::destroy($request->delete_user);
+        } catch (\Exception $exception) {
+            $message = 'Something went wrong.';
+        } finally {
+            return redirect()->route('welcome')->with('message', $message);
         }
     }
 }

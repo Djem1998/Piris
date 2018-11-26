@@ -18,3 +18,5 @@ Route::post('/add', 'UserInfoController@add')->name('add');
 Route::post('/checkUser', 'UserInfoController@checkUserName')->name('checkUser');
 Route::post('/checkUserPassport', 'UserInfoController@checkUserPassport')->name('checkUserPassport');
 Route::post('/checkIdentificationNumber', 'UserInfoController@checkIdentificationNumber')->name('checkIdentificationNumber');
+Route::get('/deleteUser', 'DeleteController@index')->name('deleteUser');
+Route::post('/delete', 'UserInfoController@delete')->name('delete');
