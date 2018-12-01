@@ -42,7 +42,7 @@
                         <a class="nav-link menu-button" href="{{ route('addUser') }}" id="addUser">{{ __('Add User') }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link menu-button" href="#" id="editingUser">{{ __('Editing User') }}</a>
+                        <a class="nav-link menu-button" href="{{ route('editingUser') }}" id="editingUser">{{ __('Editing User') }}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link menu-button" href="{{ route('deleteUser') }}" id="deleteUser">{{ __('Delete User') }}</a>
