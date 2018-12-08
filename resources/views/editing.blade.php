@@ -165,7 +165,7 @@
                         <label for="monthly_income"
                                class="col-md-12 col-form-label text-md-center">{{ __('Monthly Income') }}</label>
                         <input name="monthly_income" id="monthly_income" class="form-control" type="text"
-                               pattern="\d+,\d{2}">
+                               pattern="\d+.\d{2}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="citizenship"

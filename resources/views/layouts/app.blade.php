@@ -47,6 +47,9 @@
                     <li class="nav-item">
                         <a class="nav-link menu-button" href="{{ route('deleteUser') }}" id="deleteUser">{{ __('Delete User') }}</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-button" href="{{ route('viewAddDeposit') }}" id="viewAddDeposit">{{ __('Add Deposit') }}</a>
+                    </li>
                 </ul>
             </div>
         </div>

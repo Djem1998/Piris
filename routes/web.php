@@ -28,3 +28,8 @@ Route::get('/getFamilyPosition', 'EditingController@getFamilyPositionTable')->na
 Route::get('/getResidenceCity', 'EditingController@getResidenceCityTable')->name('getResidenceCity');
 Route::get('/getRegistrationCity', 'EditingController@getRegistrationCityTable')->name('getRegistrationCity');
 Route::post('/update', 'UserInfoController@update')->name('update');
+Route::get('/viewAddDeposit', 'DepositController@index')->name('viewAddDeposit');
+Route::get('/getDuration/{currency}/{depositName}', 'DepositController@getDuration')->name('getDuration');
+Route::get('/getPercent/{currency}/{depositName}/{duration}', 'DepositController@getPercent')->name('getPercent');
+Route::get('/getCountAccounts/{id}', 'DepositController@getCountAccounts')->name('getCountAccounts');
+Route::post('/addDeposit', 'DepositController@addDeposit')->name('addDeposit');

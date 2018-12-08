@@ -10,6 +10,7 @@ class UserInfoController extends Controller
 {
     public function add(Request $request)
     {
+        $message = 'User is add into database.';
         if ($request->home_phone != null && $request->mobile_phone != null) {
             Validator::make($request->all(), [
                 'first_name' => 'required|alpha',
@@ -126,12 +127,10 @@ class UserInfoController extends Controller
             $userInfo->pensioner = $request->pensioner;
             $userInfo->monthly_income = $request->monthly_income;
             $userInfo->save();
-            $message = 'User is add into database.';
         } catch (\Exception $exception) {
             $message = 'Something went wrong.';
-        } finally {
-            return redirect()->route('welcome')->with('message', $message);
         }
+        return redirect()->route('welcome');
     }
 
     public function checkUserName(Request $request)
@@ -155,9 +154,8 @@ class UserInfoController extends Controller
             }
         } catch (\Exception $exception) {
             $message = 'Something went wrong.Error with code: ' . $exception->getCode();
-        } finally {
-            return $message;
         }
+        return $message;
     }
 
     public function checkUserPassport(Request $request)
@@ -181,9 +179,8 @@ class UserInfoController extends Controller
             }
         } catch (\Exception $exception) {
             $message = 'Something went wrong.Error with code: ' . $exception->getCode();
-        } finally {
-            return $message;
         }
+        return $message;
     }
 
     public function checkIdentificationNumber(Request $request)
@@ -219,9 +216,8 @@ class UserInfoController extends Controller
             UserInformation::destroy($request->delete_user);
         } catch (\Exception $exception) {
             $message = 'Something went wrong.';
-        } finally {
-            return redirect()->route('welcome')->with('message', $message);
         }
+        return redirect()->route('welcome')->with('message', $message);
     }
 
     public function getUserInfoByID($id)
@@ -246,6 +242,7 @@ class UserInfoController extends Controller
 
     public function update(Request $request)
     {
+        $message = 'User is add into database.';
         if ($request->home_phone != null && $request->mobile_phone != null) {
             Validator::make($request->all(), [
                 'first_name' => 'required|alpha',
@@ -362,11 +359,10 @@ class UserInfoController extends Controller
             $userInfo->pensioner = $request->pensioner;
             $userInfo->monthly_income = $request->monthly_income;
             $userInfo->save();
-            $message = 'User is add into database.';
         } catch (\Exception $exception) {
             $message = 'Something went wrong.';
-        } finally {
-            return redirect()->route('welcome')->with('message', $message);
         }
+        return redirect()->route('welcome');
+
     }
 }

@@ -28,5 +28,8 @@ class VerifyCsrfToken extends Middleware
         "http://127.0.0.1:8000/getFamilyPosition",
         "http://127.0.0.1:8000/getResidenceCity",
         "http://127.0.0.1:8000/getRegistrationCity",
+        "http://127.0.0.1:8000/getDuration/{currency}/{depositName}",
+        "http://127.0.0.1:8000/getPercent/{currency}/{depositName}/{duration}",
+        "http://127.0.0.1:8000/getCountAccounts/{id}",
     ];
 }

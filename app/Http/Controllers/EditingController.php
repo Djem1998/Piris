@@ -12,7 +12,8 @@ use App\UserInformation;
 
 class EditingController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $users = UserInformation::all();
         $result = array();
         $i = 0;
@@ -25,56 +26,61 @@ class EditingController extends Controller
         ]);
     }
 
-    public function getCitizenshipTable(){
+    public function getCitizenshipTable()
+    {
         $result = array();
         $i = 0;
         $citizenships = Citizenship::all();
         foreach ($citizenships as $citizenship) {
-            $result[$i] = array('id'=> $citizenship->id, 'name' => $citizenship->name);
+            $result[$i] = array('id' => $citizenship->id, 'name' => $citizenship->name);
             $i++;
         }
         return $result;
     }
 
-    public function getDisabilityTable(){
+    public function getDisabilityTable()
+    {
         $result = array();
         $i = 0;
         $disabilities = Disability::all();
         foreach ($disabilities as $disability) {
-            $result[$i] = array('id'=> $disability->id, 'name' => $disability->name);
+            $result[$i] = array('id' => $disability->id, 'name' => $disability->name);
             $i++;
         }
         return $result;
     }
 
-    public function getFamilyPositionTable(){
+    public function getFamilyPositionTable()
+    {
         $result = array();
         $i = 0;
         $family_positions = Family_position::all();
         foreach ($family_positions as $family_position) {
-            $result[$i] = array('id'=> $family_position->id, 'name' => $family_position->name);
+            $result[$i] = array('id' => $family_position->id, 'name' => $family_position->name);
             $i++;
         }
         return $result;
     }
 
-    public function getResidenceCityTable(){
+    public function getResidenceCityTable()
+    {
         $result = array();
         $i = 0;
         $residence_cities = Residence_city::all();
         foreach ($residence_cities as $residence_city) {
-            $result[$i] = array('id'=> $residence_city->id, 'name' => $residence_city->name);
+            $result[$i] = array('id' => $residence_city->id, 'name' => $residence_city->name);
             $i++;
         }
         return $result;
     }
 
-    public function getRegistrationCityTable(){
+    public function getRegistrationCityTable()
+    {
         $result = array();
         $i = 0;
         $registration_cities = Registration_city::all();
         foreach ($registration_cities as $registration_city) {
-            $result[$i] = array('id'=> $registration_city->id, 'name' => $registration_city->name);
+            $result[$i] = array('id' => $registration_city->id, 'name' => $registration_city->name);
             $i++;
         }
         return $result;

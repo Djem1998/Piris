@@ -13,9 +13,16 @@ class DeleteController extends Controller
         $result = array();
         $i = 0;
         foreach ($users as $user) {
-            $result[$i] = array('id' => $user->id, 'first_name' => $user->first_name, 'last_name' => $user->last_name, 'father_name' => $user->father_name);
+            $result[$i] = array(
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'father_name' => $user->father_name
+            );
+
             $i++;
         }
+
         return view('delete')->with([
             'users' => $result,
         ]);

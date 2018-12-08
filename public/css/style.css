@@ -24,24 +24,29 @@
     border-color: #38c172;
     font-size: 25px;
 }
-.pick-sex{
+
+.pick-sex {
     display: flex;
     justify-content: space-evenly;
 }
-.pick-pensioner{
+
+.pick-pensioner {
     display: flex;
     justify-content: space-evenly;
 }
-.title{
+
+.title {
     font-size: 45px;
     padding-left: 30%;
 }
-.text-center{
+
+.text-center {
     font-size: 20px;
 }
-.menu-button{
+
+.menu-button {
     text-decoration: none;
-    color: white!important;
+    color: white !important;
     text-align: center;
     box-shadow: 0 4px 3px 1px rgba(63, 60, 121, 0.46);
     border-radius: 10px;
@@ -49,31 +54,51 @@
     box-sizing: border-box;
     border: 1px;
 }
-.menu-button:hover{
+
+.menu-button:hover {
     text-decoration: none;
     color: white;
     background-color: #195cc1;
 }
+
 input {
-    border-radius: 10px!important;
+    border-radius: 10px !important;
 }
-.error{
+
+.error {
     border-color: red;
 }
-.active{
+
+.active {
     background-color: #0765f2;
     box-shadow: none;
 }
-.delete-select{
+
+.delete-select {
     font-size: 30px;
     padding-top: 5%;
     padding-bottom: 2%;
 }
-.empty{
+
+.empty {
     font-size: 50px;
     padding-top: 30%;
     color: darkred;
 }
-.selected{
+
+.selected {
+    display: none;
+}
+
+.title-bank {
+    font-size: 45px;
+}
+.dynamic{
+    display: none;
+}
+.contract_number{
+    display: none;
+}
+.percent{
     display: none;
 }
