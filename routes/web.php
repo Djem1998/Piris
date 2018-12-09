@@ -33,3 +33,4 @@ Route::get('/getDuration/{currency}/{depositName}', 'DepositController@getDurati
 Route::get('/getPercent/{currency}/{depositName}/{duration}', 'DepositController@getPercent')->name('getPercent');
 Route::get('/getCountAccounts/{id}', 'DepositController@getCountAccounts')->name('getCountAccounts');
 Route::post('/addDeposit', 'DepositController@addDeposit')->name('addDeposit');
+Route::get('/bankDayClosing', 'DepositController@bankDayClosing')->name('bankDayClosing');

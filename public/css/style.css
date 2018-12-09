@@ -93,12 +93,24 @@ input {
 .title-bank {
     font-size: 45px;
 }
-.dynamic{
+
+.dynamic {
     display: none;
 }
-.contract_number{
+
+.contract_number {
     display: none;
 }
-.percent{
+
+.percent {
     display: none;
+}
+
+.closing {
+    font-size: 25px;
+    padding: 5px 5px 5px 5px;
+}
+
+.closing-div {
+    padding: 100px 270px 252px 461px;
 }

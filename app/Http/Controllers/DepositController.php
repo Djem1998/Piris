@@ -230,7 +230,7 @@ class DepositController extends Controller
             'balance' => $result['credit'] + $sum2 - $result['debit'],
         ]);
         //info
-        $operation_name = 'add to debit current account';
+        $operation_name = 'add to credit bank fund';
         $info = $this->getInfoAboutBank();
         $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
         $this->addOperation($operation_name, $operation, $user_info_id);
@@ -302,9 +302,100 @@ class DepositController extends Controller
             $account_chart->interest_accounts_id = $interest_account_id;
             $account_chart->user_informations_id = $request->input('select_user');
             $account_chart->date_start = $request->input('date_start');
-            $account_chart->date_end = date('Y-m-d',strtotime("" . $request->input('date_start') . " +" . $request->input('duration') . " month"));
+            $account_chart->date_end = date('Y-m-d', strtotime("" . $request->input('date_start') . " +" . $request->input('duration') . " month"));
             $account_chart->save();
         }
+
         return redirect()->route('welcome');
+    }
+
+    private function getBalanceInterestAccount()
+    {
+        $interest_account = InterestAccount::all();
+        foreach ($interest_account as $value) {
+            $result = array('id' => $value->id, 'balance' => $value->credit - $value->debit);
+        }
+        return $result;
+    }
+
+    private function getInfoAboutInterestAccount()
+    {
+        $interest_account = InterestAccount::all();
+        foreach ($interest_account as $value) {
+            $result = array('credit' => $value->credit, 'debit' => $value->debit, 'balance' => $value->balance);
+        }
+
+        return $result;
+    }
+
+    private function interestAccrual($current_account_id, $deposit_type_id, $interest_account_id, $user_info_id)
+    {
+        //get sum
+        $current_accounts = CurrentAccount::where('id', $current_account_id)->get();
+        foreach ($current_accounts as $current_account) {
+            $sum = $current_account->debit;
+        }
+        //check currency
+        $deposit_types = DepositType::where('id', $deposit_type_id)->get();
+        foreach ($deposit_types as $deposit_type) {
+            $currency = $deposit_type->currency;
+            $percent = (float)(str_replace('%', '', $deposit_type->percent));
+        }
+        if ($currency == 'USD') {
+            $sum2 = (float)$sum * 2.135;
+        } elseif ($currency == 'EUR') {
+            $sum2 = (float)$sum * 2.535;
+        } else {
+            $sum2 = (float)$sum;
+        }
+        //add to debit bank
+        $result = $this->getInfoAboutBank();
+        BankFund::where('id', $result['id'])->update([
+            'debit' => $result['debit'] + $sum2,
+            'balance' => $result['credit'] - ($result['debit'] + $sum2),
+        ]);
+        //info
+        $operation_name = 'add to debit bank fund';
+        $info = $this->getInfoAboutBank();
+        $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $this->addOperation($operation_name, $operation, $user_info_id);
+        //add to credit interest account
+        $result = $this->getBalanceInterestAccount();
+        InterestAccount::where('id', $interest_account_id)->update([
+            'credit' => ($sum/100) * $percent,
+            'balance' => (($sum/100) * $percent)-$result['balance'] ,
+        ]);
+        //info
+        $operation_name = 'add to credit interest account';
+        $info = $this->getInfoAboutInterestAccount();
+        $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $this->addOperation($operation_name, $operation, $user_info_id);
+    }
+
+    public function bankDayClosing()
+    {
+        try{
+            $result= 'Nothing doing.';
+            $accounts = AccountsChart::all();
+            foreach ($accounts as $account) {
+                $current_account_id = $account->current_accounts_id;
+                $deposit_type_id = $account->deposit_types_id;
+                $interest_account_id = $account->interest_accounts_id;
+                $user_info_id = $account->user_informations_id;
+                $deposit_types = DepositType::where('id', $deposit_type_id)->get();
+                foreach ($deposit_types as $deposit_type) {
+                    $duration = $deposit_type->duration;
+                }
+                for ($i = 1; $i < $duration; $i++){
+                    if (date('Y-m-d') == date('Y-m-d', strtotime("" . $account->date_start . " +" . $i . " month"))){
+                        $this->interestAccrual($current_account_id, $deposit_type_id, $interest_account_id, $user_info_id);
+                        $result = 'Operation successful.';
+                    };
+                }
+            }
+        } catch (\Exception $exception){
+            $result = 'Something went wrong. Error with code: '.$exception->getCode();
+        }
+        return $result;
     }
 }

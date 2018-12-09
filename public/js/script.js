@@ -16,6 +16,21 @@ $(document).ready(function () {
     }
     $('#birthday').attr('max', now);
     $('#issue_date').attr('max', now);
+    $('.closing').on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: "/bankDayClosing",
+            method: "GET",
+            cache: false,
+            success:function (response) {
+                if (response == 'Operation successful.'){
+                    swal('Success', response, 'success')
+                } else {
+                    swal('Error', response, 'error')
+                }
+            }
+        })
+    });
     let pathname = window.location.pathname;
     if (pathname === '/addUser') {
         $('#addUser').addClass('active');
