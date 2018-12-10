@@ -19,6 +19,7 @@ class CreateAccountsChartsTable extends Migration
             $table->unsignedInteger('current_accounts_id');
             $table->unsignedInteger('interest_accounts_id');
             $table->unsignedInteger('user_informations_id');
+            $table->string('sum');
             $table->timestamp('date_start')->nullable();
             $table->timestamp('date_end')->nullable();
             $table->timestamps();

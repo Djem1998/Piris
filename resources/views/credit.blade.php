@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <h1 class="title-bank text-center">Idea Bank</h1>
-        <form method="post" action="{{ route('addDeposit') }}">
+        <form method="post" action="{{ route('addCredit') }}">
             @csrf
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -80,7 +80,7 @@
                     <input type="hidden" id="interest_account" name="interest_account">
                     <input type="hidden" id="current_account" name="current_account">
                 </div>
-                <button class="button form-control btn-success" type="submit" disabled>Add deposit</button>
+                <button class="button form-control btn-success" type="submit" disabled>Add credit</button>
             </div>
         </form>
     </div>

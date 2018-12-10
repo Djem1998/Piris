@@ -22,9 +22,20 @@ $(document).ready(function () {
             url: "/bankDayClosing",
             method: "GET",
             cache: false,
-            success:function (response) {
-                if (response == 'Operation successful.'){
-                    swal('Success', response, 'success')
+            success: function (response) {
+                if (response == 'Operation successful.') {
+                    $.ajax({
+                        url: "/bankDayClosingCredit",
+                        method: "GET",
+                        cache: false,
+                        success:function (response) {
+                            if (response == 'Operation successful.') {
+                                swal('Success', 'Deposit and Credit operations successful.', 'success')
+                            }else {
+                                swal('Error', 'Deposit operation successful, Credit operation failed.', 'error')
+                            }
+                        }
+                    })
                 } else {
                     swal('Error', response, 'error')
                 }
@@ -33,6 +44,7 @@ $(document).ready(function () {
     });
     let pathname = window.location.pathname;
     if (pathname === '/addUser') {
+        $('#viewAddCredit').removeClass('active');
         $('#addUser').addClass('active');
         $('#viewAddDeposit').removeClass('active');
         $('#deleteUser').removeClass('active');
@@ -153,11 +165,13 @@ $(document).ready(function () {
             }
         })
     } else if (pathname === '/deleteUser') {
+        $('#viewAddCredit').removeClass('active');
         $('#addUser').removeClass('active');
         $('#deleteUser').addClass('active');
         $('#editingUser').removeClass('active');
         $('#viewAddDeposit').removeClass('active');
     } else if (pathname === '/editingUser') {
+        $('#viewAddCredit').removeClass('active');
         $('#addUser').removeClass('active');
         $('#deleteUser').removeClass('active');
         $('#editingUser').addClass('active');
@@ -312,14 +326,38 @@ $(document).ready(function () {
     } else if (pathname === '/viewAddDeposit') {
         $('#date_start').attr('min', now);
         $('#addUser').removeClass('active');
+        $('#viewAddCredit').removeClass('active');
         $('#deleteUser').removeClass('active');
         $('#editingUser').removeClass('active');
         $('#viewAddDeposit').addClass('active');
         let select;
+        let uniqueItems = [];
         $('#select_user').on('change', function () {
             select = $(this).val();
             $('.select').fadeOut();
             $('.selected').fadeIn();
+            $.ajax({
+                url: "/getCurrency",
+                method: "GET",
+                cache: false,
+                success: function (response) {
+                    uniqueItems = Array.from(new Set(response));
+                    for (let i = 0; i < uniqueItems.length; i++) {
+                        $('#currency').append('<option value="' + uniqueItems[i] + '">' + uniqueItems[i] + '</option>')
+                    }
+                }
+            });
+            $.ajax({
+                url: "/getName",
+                method: "GET",
+                cache: false,
+                success: function (response) {
+                    uniqueItems = Array.from(new Set(response));
+                    for (let i = 0; i < uniqueItems.length; i++) {
+                        $('#deposit_type').append('<option value="' + uniqueItems[i] + '">' + uniqueItems[i] + '</option>')
+                    }
+                }
+            });
         });
         $('#deposit_type, #currency').on('change', function () {
             if ($('#deposit_type').val() != '' && $('#currency').val() != '') {
@@ -370,14 +408,32 @@ $(document).ready(function () {
                 $('.percent').fadeOut();
                 $('#percent').val('')
             }
-        })
+        });
         let amount;
+        let count;
+        let token;
         $('#amount').on('change', function () {
             amount = parseFloat($('#amount').val());
-            if (amount < 20.00) {
-                swal('Error', 'Amount must be more than 20', 'error');
-                $('#amount').val('')
-            }
+            $.ajax({
+                url: "/getSum/" + $('#currency').val() + "/" + $('#deposit_type').val() + "/" + $('#duration option:selected').val() + "",
+                method: "GET",
+                cache: false,
+                success: function (response) {
+                    count = response.substr(1, response.length);
+                    token = response.substring(0, 1);
+                    if (token == '+') {
+                        if (amount < parseFloat(count)) {
+                            swal('Error', 'Amount must be more than '+count, 'error');
+                            $('#amount').val('')
+                        }
+                    }else {
+                        if (amount > parseFloat(count)) {
+                            swal('Error', 'Amount must be less than '+count, 'error');
+                            $('#amount').val('')
+                        }
+                    }
+                }
+            });
         });
         $(this).on('change', function () {
             if ($('#amount').val() != '' && $('#percent').val() != '' && $('#deposit_type option:selected').val() != '' && $('#currency option:selected').val() != '' && $('#date_start').val() != '') {
@@ -387,24 +443,176 @@ $(document).ready(function () {
                 let number;
                 let secondNumber;
                 $.ajax({
-                    url: "getCountAccounts/"+select+"",
+                    url: "getCountAccounts/" + select + "",
                     method: "GET",
                     cache: false,
                     success: function (response) {
-                        if (response<10){
-                            number = '00'+response;
-                            secondNumber = parseInt(response)+1;
-                            secondNumber = '00'+secondNumber;
-                        } else if (response>99) {
+                        if (response < 10) {
+                            number = '00' + response;
+                            secondNumber = parseInt(response) + 1;
+                            secondNumber = '00' + secondNumber;
+                        } else if (response > 99) {
                             number = response;
-                            secondNumber = parseInt(response)+1;
-                        } else{
-                            number = '0'+response;
-                            secondNumber = parseInt(response)+1;
-                            secondNumber = '0'+secondNumber;
+                            secondNumber = parseInt(response) + 1;
+                        } else {
+                            number = '0' + response;
+                            secondNumber = parseInt(response) + 1;
+                            secondNumber = '0' + secondNumber;
                         }
-                        current_accounts = '3014' +'01563'+number+'9';
-                        interest_accounts = '3014' +'01563'+secondNumber+'9';
+                        current_accounts = '3014' + '01563' + number + '9';
+                        interest_accounts = '3014' + '01563' + secondNumber + '9';
+                        $('#current_accounts').val(current_accounts).prop('disabled', true);
+                        $('#interest_accounts').val(interest_accounts).prop('disabled', true);
+                        $('#interest_account').val($('#interest_accounts').val())
+                        $('#current_account').val($('#current_accounts').val())
+                    }
+                });
+                $('.button').prop('disabled', false)
+            } else {
+                $('.contract_number').fadeOut();
+                $('#current_accounts').val('');
+                $('#interest_accounts').val('');
+                $('.button').prop('disabled', true)
+            }
+        })
+    } else if (pathname === '/viewAddCredit') {
+        $('#date_start').attr('min', now);
+        $('#addUser').removeClass('active');
+        $('#viewAddCredit').addClass('active');
+        $('#deleteUser').removeClass('active');
+        $('#editingUser').removeClass('active');
+        $('#viewAddDeposit').removeClass('active');
+        let select;
+        let uniqueItems = [];
+        $('#select_user').on('change', function () {
+            select = $(this).val();
+            $('.select').fadeOut();
+            $('.selected').fadeIn();
+            $.ajax({
+                url: "/getCurrencyCredit",
+                method: "GET",
+                cache: false,
+                success: function (response) {
+                    uniqueItems = Array.from(new Set(response));
+                    for (let i = 0; i < uniqueItems.length; i++) {
+                        $('#currency').append('<option value="' + uniqueItems[i] + '">' + uniqueItems[i] + '</option>')
+                    }
+                }
+            });
+            $.ajax({
+                url: "/getNameCredit",
+                method: "GET",
+                cache: false,
+                success: function (response) {
+                    uniqueItems = Array.from(new Set(response));
+                    for (let i = 0; i < uniqueItems.length; i++) {
+                        $('#deposit_type').append('<option value="' + uniqueItems[i] + '">' + uniqueItems[i] + '</option>')
+                    }
+                }
+            });
+        });
+        $('#deposit_type, #currency').on('change', function () {
+            if ($('#deposit_type').val() != '' && $('#currency').val() != '') {
+                $('.dynamic').fadeIn();
+                $('#duration option').detach();
+                $.ajax({
+                    url: "/getDurationCredit/" + $('#currency').val() + "/" + $('#deposit_type').val() + "",
+                    method: "GET",
+                    cache: false,
+                    success: function (response) {
+                        for (let key in response) {
+                            $('#duration').append('<option value="' + response[key] + '">' + response[key] + ' month' + '</option>')
+                        }
+                        $('#duration').on({
+                            'change': function () {
+                                $('#percent').val('');
+                                $('.percent').fadeIn();
+                                $.ajax({
+                                    url: "/getPercentCredit/" + $('#currency').val() + "/" + $('#deposit_type').val() + "/" + $('#duration option:selected').val() + "",
+                                    method: "GET",
+                                    cache: false,
+                                    success: function (response) {
+                                        for (let key in response) {
+                                            $('#percent').val(response[key]);
+                                        }
+                                    }
+                                });
+                            },
+                            'focusin': function () {
+                                $('#percent').val('');
+                                $('.percent').fadeIn();
+                                $.ajax({
+                                    url: "/getPercentCredit/" + $('#currency').val() + "/" + $('#deposit_type').val() + "/" + $('#duration option:selected').val() + "",
+                                    method: "GET",
+                                    cache: false,
+                                    success: function (response) {
+                                        for (let key in response) {
+                                            $('#percent').val(response[key]);
+                                        }
+                                    }
+                                });
+                            }
+                        })
+                    }
+                })
+            } else {
+                $('.dynamic').fadeOut();
+                $('.percent').fadeOut();
+                $('#percent').val('')
+            }
+        });
+        let amount;
+        let count;
+        let token;
+        $('#amount').on('change', function () {
+            amount = parseFloat($('#amount').val());
+            $.ajax({
+                url: "/getSumCredit/" + $('#currency').val() + "/" + $('#deposit_type').val() + "/" + $('#duration option:selected').val() + "",
+                method: "GET",
+                cache: false,
+                success: function (response) {
+                    count = response.substr(1, response.length);
+                    token = response.substring(0, 1);
+                    if (token == '+') {
+                        if (amount < parseFloat(count)) {
+                            swal('Error', 'Amount must be more than '+count, 'error');
+                            $('#amount').val('')
+                        }
+                    }else {
+                        if (amount > parseFloat(count)) {
+                            swal('Error', 'Amount must be less than '+count, 'error');
+                            $('#amount').val('')
+                        }
+                    }
+                }
+            });
+        });
+        $(this).on('change', function () {
+            if ($('#amount').val() != '' && $('#percent').val() != '' && $('#deposit_type option:selected').val() != '' && $('#currency option:selected').val() != '' && $('#date_start').val() != '') {
+                $('.contract_number').fadeIn();
+                let current_accounts;
+                let interest_accounts;
+                let number;
+                let secondNumber;
+                $.ajax({
+                    url: "getCountAccountsCredit/" + select + "",
+                    method: "GET",
+                    cache: false,
+                    success: function (response) {
+                        if (response < 10) {
+                            number = '00' + response;
+                            secondNumber = parseInt(response) + 1;
+                            secondNumber = '00' + secondNumber;
+                        } else if (response > 99) {
+                            number = response;
+                            secondNumber = parseInt(response) + 1;
+                        } else {
+                            number = '0' + response;
+                            secondNumber = parseInt(response) + 1;
+                            secondNumber = '0' + secondNumber;
+                        }
+                        current_accounts = '2412' + '01563' + number + '8';
+                        interest_accounts = '2412' + '01563' + secondNumber + '8';
                         $('#current_accounts').val(current_accounts).prop('disabled', true);
                         $('#interest_accounts').val(interest_accounts).prop('disabled', true);
                         $('#interest_account').val($('#interest_accounts').val())

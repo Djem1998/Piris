@@ -15,10 +15,12 @@ class CreateDepositTypesTable extends Migration
     {
         Schema::create('deposit_types', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('type', 20);
             $table->string('name', 100);
             $table->integer('duration');
             $table->string('currency', 4);
             $table->string('percent', 8);
+            $table->string('sum');
             $table->timestamps();
         });
     }

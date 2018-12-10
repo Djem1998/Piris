@@ -50,6 +50,9 @@
                     <li class="nav-item">
                         <a class="nav-link menu-button" href="{{ route('viewAddDeposit') }}" id="viewAddDeposit">{{ __('Add Deposit') }}</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link menu-button" href="{{ route('viewAddCredit') }}" id="viewAddCredit">{{ __('Add Credit') }}</a>
+                    </li>
                 </ul>
             </div>
         </div>
