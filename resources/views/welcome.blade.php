@@ -13,6 +13,7 @@
                         value="{{ $item['id'] }}">{{ $item['last_name'] }} {{ $item['first_name'] }}  {{ $item['father_name'] }}</option>
                 @endforeach
             </select>
+            <div class="closing-div"><a href="#" class="menu-button closing">Bank day closing</a></div>
         @else
             <div class="empty text-center">Have`n got users into database.</div>
         @endif
@@ -28,6 +29,5 @@
                         </script>
                     @endif
                 @endif--}}
-        <div class="closing-div"><a href="#" class="menu-button closing">Bank day closing</a></div>
     </div>
 @endsection
