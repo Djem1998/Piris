@@ -49,6 +49,7 @@ $(document).ready(function () {
         $('#viewAddDeposit').removeClass('active');
         $('#deleteUser').removeClass('active');
         $('#editingUser').removeClass('active');
+        $('#viewTerminal').removeClass('active');
         let element;
         element = document.getElementById('home_phone');
         new IMask(element, {
@@ -170,12 +171,14 @@ $(document).ready(function () {
         $('#deleteUser').addClass('active');
         $('#editingUser').removeClass('active');
         $('#viewAddDeposit').removeClass('active');
+        $('#viewTerminal').removeClass('active');
     } else if (pathname === '/editingUser') {
         $('#viewAddCredit').removeClass('active');
         $('#addUser').removeClass('active');
         $('#deleteUser').removeClass('active');
         $('#editingUser').addClass('active');
         $('#viewAddDeposit').removeClass('active');
+        $('#viewTerminal').removeClass('active');
         let element;
         element = document.getElementById('home_phone');
         new IMask(element, {
@@ -330,6 +333,7 @@ $(document).ready(function () {
         $('#deleteUser').removeClass('active');
         $('#editingUser').removeClass('active');
         $('#viewAddDeposit').addClass('active');
+        $('#viewTerminal').removeClass('active');
         let select;
         let uniqueItems = [];
         $('#select_user').on('change', function () {
@@ -474,7 +478,33 @@ $(document).ready(function () {
                 $('#interest_accounts').val('');
                 $('.button').prop('disabled', true)
             }
-        })
+        });
+        $('.button').on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/addDeposit',
+                method: "POST",
+                cache: false,
+                data:{
+                    select_user: $('#select_user option:selected').val(),
+                    current_account: $('#current_account').val(),
+                    interest_account: $('#interest_account').val(),
+                    deposit_type: $('#deposit_type option:selected').val(),
+                    currency: $('#currency option:selected').val(),
+                    duration: $('#duration option:selected').val(),
+                    percent: $('#percent').val(),
+                    amount: $('#amount').val(),
+                    date_start: $('#date_start').val(),
+                },
+                success:function (response) {
+                    if (response == 'Something went wrong.') {
+                        swal('Error', response, 'error')
+                    } else{
+                        swal('Success', response, 'success')
+                    }
+                }
+            })
+        });
     } else if (pathname === '/viewAddCredit') {
         $('#date_start').attr('min', now);
         $('#addUser').removeClass('active');
@@ -482,6 +512,7 @@ $(document).ready(function () {
         $('#deleteUser').removeClass('active');
         $('#editingUser').removeClass('active');
         $('#viewAddDeposit').removeClass('active');
+        $('#viewTerminal').removeClass('active');
         let select;
         let uniqueItems = [];
         $('#select_user').on('change', function () {
@@ -626,6 +657,116 @@ $(document).ready(function () {
                 $('#interest_accounts').val('');
                 $('.button').prop('disabled', true)
             }
+        });
+        $('.button').on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/addCredit',
+                method: "POST",
+                cache: false,
+                data:{
+                    select_user: $('#select_user option:selected').val(),
+                    current_account: $('#current_account').val(),
+                    interest_account: $('#interest_account').val(),
+                    deposit_type: $('#deposit_type option:selected').val(),
+                    currency: $('#currency option:selected').val(),
+                    duration: $('#duration option:selected').val(),
+                    percent: $('#percent').val(),
+                    amount: $('#amount').val(),
+                    date_start: $('#date_start').val(),
+                },
+                success:function (response) {
+                    if (response == 'Something went wrong.') {
+                        swal('Error', response, 'error')
+                    } else{
+                        swal('Success', response, 'success')
+                    }
+                }
+            })
+        });
+    } else if(pathname === '/viewTerminal'){
+        $('.operations').fadeOut();
+        $('.true').fadeIn();
+        let card_number;
+        let pin_code;
+        $('#addUser').removeClass('active');
+        $('#viewAddCredit').removeClass('active');
+        $('#deleteUser').removeClass('active');
+        $('#editingUser').removeClass('active');
+        $('#viewAddDeposit').removeClass('active');
+        $('#viewTerminal').addClass('active');
+        $(this).on('change', function (e) {
+            if ($('#card_number').val() != '' && $('#pin_code').val() != '') {
+                $('#enter_card').attr('disabled', false)
+            }
+            if ($('#operation_type option:selected').val() == 'getMoneyFromCredit') {
+                $('#sum').fadeIn()
+            }else {
+                $('#sum').fadeOut()
+            }
+        });
+        let count = 0;
+        let num;
+        $('#enter_card').on('click', function (e) {
+            if (count >= 2 && num == $('#card_number').val()){
+                $('#enter_card').attr('disabled', true)
+                $('#card_number').val('').attr('disabled', true);
+                $('#pin_code').val('').attr('disabled', true);
+                swal('Error', 'You enter incorrect pin code 3 times', 'error')
+            }
+            e.preventDefault();
+            card_number = $('#card_number').val();
+            pin_code = $('#pin_code').val();
+            $.ajax({
+                url: "/checkAutorization",
+                method: "POST",
+                data:{
+                    card_number: card_number,
+                    pin_code: pin_code,
+                },
+                cache: false,
+                success: function (response) {
+                    if (response == 0){
+                        swal('Error', 'Check number and pin code card', 'error');
+                        ++count;
+                        num = card_number;
+                        $('#card_number').val('');
+                        $('#pin_code').val('');
+                    } else {
+                        $('.operations').fadeIn();
+                        $('.true').fadeOut();
+                        $('#card_number').val('');
+                        $('#pin_code').val('');
+                        $('#enter').on('click', function (e) {
+                            e.preventDefault();
+                            if ($('#operation_type option:selected').val() != 'cancel') {
+                                $.ajax({
+                                    url: "/"+$('#operation_type option:selected').val()+"",
+                                    method: "POST",
+                                    cache: false,
+                                    data:{
+                                        card_num: card_number,
+                                        sum: $('#sum').val(),
+                                    },
+                                    success: function (response) {
+                                        if (response == 'Something went wrong.') {
+                                            swal('Error', response, 'error');
+                                        } else {
+                                            swal('Success', response, 'success');
+                                            $('.operations').fadeOut();
+                                            $('.true').fadeIn();
+                                        }
+                                    }
+                                })
+                            } else {
+                                $('.operations').fadeOut();
+                                $('.true').fadeIn();
+                                $('#sum').fadeOut()
+                            }
+                        })
+                    }
+                }
+            })
         })
     }
 });

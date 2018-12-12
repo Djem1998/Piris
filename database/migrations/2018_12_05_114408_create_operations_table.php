@@ -16,6 +16,7 @@ class CreateOperationsTable extends Migration
         Schema::create('operations', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_informations_id');
+            $table->string('type');
             $table->string('operation_name');
             $table->string('operation');
             $table->timestamps();

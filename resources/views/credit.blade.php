@@ -28,7 +28,7 @@
                 <div class="string">
                     <div class="form-group col-md-6">
                         <label for="deposit_type"
-                               class="col-md-12 col-form-label text-md-center">{{ __('Deposit type') }}</label>
+                               class="col-md-12 col-form-label text-md-center">{{ __('Credit type') }}</label>
                         <select name="deposit_type" id="deposit_type" class="form-control">
                             <option></option>
                         </select>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BankFund;
+use App\Card;
 use App\CurrentAccount;
 use App\InterestAccount;
 use App\Operation;
@@ -184,6 +185,7 @@ class DepositController extends Controller
         $operations = new Operation();
         $operations->user_informations_id = $user_info_id;
         $operations->operation_name = $operation_name;
+        $operations->type = 'deposit';
         $operations->operation = $operation;
         $operations->save();
     }
@@ -282,70 +284,80 @@ class DepositController extends Controller
 
     public function addDeposit(Request $request)
     {
-        Validator::make($request->all(), [
-            'date_start' => 'required|after:yesterday|date',
-            'amount' => 'required|regex:/\d+.\d{2}$/',
-            'duration' => 'required',
-            'deposit_type' => 'required',
-            'currency' => 'required',
-        ])->validate();
-        //check currency
-        $sum = $this->checkCurrency($request->input('amount'), $request->input('currency'));
-        //init cashbox and bank fund
-        $cashbox = Cashbox::all();
-        if (count($cashbox) == 0) {
-            $this->initCashbox();
+        try {
+            Validator::make($request->all(), [
+                'date_start' => 'required|after:yesterday|date',
+                'amount' => 'required|regex:/\d+.\d{2}$/',
+                'duration' => 'required',
+                'deposit_type' => 'required',
+                'currency' => 'required',
+            ])->validate();
+            //check currency
+            $sum = $this->checkCurrency($request->input('amount'), $request->input('currency'));
+            //init cashbox and bank fund
+            $cashbox = Cashbox::all();
+            if (count($cashbox) == 0) {
+                $this->initCashbox();
+            }
+            $bank_fund = BankFund::all();
+            if (count($bank_fund) == 0) {
+                $this->initBankFund();
+            }
+            //init users accounts
+            $current_account = CurrentAccount::where('account_number', $request->input('current_account'))->get();
+            if (count($current_account) == 0) {
+                $this->initCurrentAccount($request->input('current_account'));
+            }
+            $interest_account = InterestAccount::where('account_number', $request->input('interest_account'))->get();
+            if (count($interest_account) == 0) {
+                $this->initInterestAccount($request->input('interest_account'));
+            }
+            //add to cashbox
+            $this->addToCashbox($request->input('amount'), $request->input('select_user'));
+            //add to current account
+            $this->transferFromCashboxToCurrentAccount($request->input('amount'), $request->input('select_user'));
+            //use money by the bank
+            $this->addToBank($request->input('amount'), $request->input('select_user'), $sum);
+            //add account charts
+            $interest_accounts = InterestAccount::where('account_number', $request->input('interest_account'))->get();
+            foreach ($interest_accounts as $value) {
+                $interest_account_id = $value->id;
+            }
+            $current_accounts = CurrentAccount::where('account_number', $request->input('current_account'))->get();
+            foreach ($current_accounts as $account) {
+                $current_account_id = $account->id;
+            }
+            $deposit_types = DepositType::where('name', $request->input('deposit_type'))->where('duration', $request->input('duration'))
+                ->where('currency', $request->input('currency'))->where('type', 'deposit')->get();
+            foreach ($deposit_types as $deposit_type) {
+                $deposit_type_id = $deposit_type->id;
+            }
+            $date_start = strtotime($request->input('date_start'));
+            $account_charts = AccountsChart::where('deposit_types_id', $deposit_type_id)->where('current_accounts_id', $current_account_id)
+                ->where('interest_accounts_id', $interest_account_id)->where('user_informations_id', $request->input('select_user'))
+                ->where('date_start', $date_start)->get();
+            if (count($account_charts) == 0) {
+                $account_chart = new AccountsChart();
+                $account_chart->deposit_types_id = $deposit_type_id;
+                $account_chart->current_accounts_id = $current_account_id;
+                $account_chart->interest_accounts_id = $interest_account_id;
+                $account_chart->sum = $request->input('amount');
+                $account_chart->user_informations_id = $request->input('select_user');
+                $account_chart->date_start = $request->input('date_start');
+                $account_chart->date_end = date('Y-m-d', strtotime("" . $request->input('date_start') . " +" . $request->input('duration') . " month"));
+                $account_chart->save();
+                $card = new Card();
+                $card->card_num = $request->input('current_account');
+                $card->interest_num = $request->input('interest_account');
+                $pin = rand(1000, 9999);
+                $card->pin = $pin;
+                $card->save();
+            }
+            $result = 'Successful. Pin-code: ' . $pin . '. Card num: ' . $request->input('current_account');
+        } catch (\Exception $exception) {
+            $result = 'Something went wrong.';
         }
-        $bank_fund = BankFund::all();
-        if (count($bank_fund) == 0) {
-            $this->initBankFund();
-        }
-        //init users accounts
-        $current_account = CurrentAccount::where('account_number', $request->input('current_account'))->get();
-        if (count($current_account) == 0) {
-            $this->initCurrentAccount($request->input('current_account'));
-        }
-        $interest_account = InterestAccount::where('account_number', $request->input('interest_account'))->get();
-        if (count($interest_account) == 0) {
-            $this->initInterestAccount($request->input('interest_account'));
-        }
-        //add to cashbox
-        $this->addToCashbox($request->input('amount'), $request->input('select_user'));
-        //add to current account
-        $this->transferFromCashboxToCurrentAccount($request->input('amount'), $request->input('select_user'));
-        //use money by the bank
-        $this->addToBank($request->input('amount'), $request->input('select_user'), $sum);
-        //add account charts
-        $interest_accounts = InterestAccount::where('account_number', $request->input('interest_account'))->get();
-        foreach ($interest_accounts as $value) {
-            $interest_account_id = $value->id;
-        }
-        $current_accounts = CurrentAccount::where('account_number', $request->input('current_account'))->get();
-        foreach ($current_accounts as $account) {
-            $current_account_id = $account->id;
-        }
-        $deposit_types = DepositType::where('name', $request->input('deposit_type'))->where('duration', $request->input('duration'))
-            ->where('currency', $request->input('currency'))->where('type', 'deposit')->get();
-        foreach ($deposit_types as $deposit_type) {
-            $deposit_type_id = $deposit_type->id;
-        }
-        $date_start = strtotime($request->input('date_start'));
-        $account_charts = AccountsChart::where('deposit_types_id', $deposit_type_id)->where('current_accounts_id', $current_account_id)
-            ->where('interest_accounts_id', $interest_account_id)->where('user_informations_id', $request->input('select_user'))
-            ->where('date_start', $date_start)->get();
-        if (count($account_charts) == 0) {
-            $account_chart = new AccountsChart();
-            $account_chart->deposit_types_id = $deposit_type_id;
-            $account_chart->current_accounts_id = $current_account_id;
-            $account_chart->interest_accounts_id = $interest_account_id;
-            $account_chart->sum = $request->input('amount');
-            $account_chart->user_informations_id = $request->input('select_user');
-            $account_chart->date_start = $request->input('date_start');
-            $account_chart->date_end = date('Y-m-d', strtotime("" . $request->input('date_start') . " +" . $request->input('duration') . " month"));
-            $account_chart->save();
-        }
-
-        return redirect()->route('welcome');
+        return $result;
     }
 
     private function getBalanceInterestAccount()

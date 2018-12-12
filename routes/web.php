@@ -46,3 +46,7 @@ Route::get('/getCountAccountsCredit/{id}', 'CreditController@getCountAccounts')-
 Route::post('/addCredit', 'CreditController@addCredit')->name('addCredit');
 Route::get('/getSumCredit/{currency}/{depositName}/{duration}', 'CreditController@getSumCredit')->name('getSumCredit');
 Route::get('/bankDayClosingCredit', 'CreditController@bankDayClosing')->name('bankDayClosingCredit');
+Route::get('/viewTerminal', 'TerminalController@index')->name('viewTerminal');
+Route::post('/checkAutorization', 'TerminalController@checkAutorization')->name('checkAutorization');
+Route::post('/getMoneyFromCredit', 'TerminalController@getMoneyFromCredit')->name('getMoneyFromCredit');
+Route::post('/getAccountBalance', 'TerminalController@getAccountBalance')->name('getAccountBalance');

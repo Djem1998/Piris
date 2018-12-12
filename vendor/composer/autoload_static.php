@@ -342,6 +342,7 @@ class ComposerStaticInitb4c9ae81ffa85d19c1aa48bbf111570d
     public static $classMap = array (
         'App\\AccountsChart' => __DIR__ . '/../..' . '/app/AccountsChart.php',
         'App\\BankFund' => __DIR__ . '/../..' . '/app/BankFund.php',
+        'App\\Card' => __DIR__ . '/../..' . '/app/Card.php',
         'App\\Cashbox' => __DIR__ . '/../..' . '/app/Cashbox.php',
         'App\\Citizenship' => __DIR__ . '/../..' . '/app/Citizenship.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
@@ -356,6 +357,7 @@ class ComposerStaticInitb4c9ae81ffa85d19c1aa48bbf111570d
         'App\\Http\\Controllers\\Auth\\ResetPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ResetPasswordController.php',
         'App\\Http\\Controllers\\Auth\\VerificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/VerificationController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\CreditController' => __DIR__ . '/../..' . '/app/Http/Controllers/CreditController.php',
         'App\\Http\\Controllers\\DeleteController' => __DIR__ . '/../..' . '/app/Http/Controllers/DeleteController.php',
         'App\\Http\\Controllers\\DepositController' => __DIR__ . '/../..' . '/app/Http/Controllers/DepositController.php',
         'App\\Http\\Controllers\\EditingController' => __DIR__ . '/../..' . '/app/Http/Controllers/EditingController.php',

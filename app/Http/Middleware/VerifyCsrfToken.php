@@ -42,5 +42,10 @@ class VerifyCsrfToken extends Middleware
         "http://127.0.0.1:8000/getCountAccountsCredit/{id}",
         "http://127.0.0.1:8000/getSumCredit/{currency}/{depositName}/{duration}",
         "http://127.0.0.1:8000/bankDayClosingCredit",
+        "http://127.0.0.1:8000/addDeposit",
+        "http://127.0.0.1:8000/addCredit",
+        "http://127.0.0.1:8000/checkAutorization",
+        "http://127.0.0.1:8000/getMoneyFromCredit",
+        "http://127.0.0.1:8000/getAccountBalance",
     ];
 }

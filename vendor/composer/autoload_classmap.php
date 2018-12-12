@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'App\\AccountsChart' => $baseDir . '/app/AccountsChart.php',
     'App\\BankFund' => $baseDir . '/app/BankFund.php',
+    'App\\Card' => $baseDir . '/app/Card.php',
     'App\\Cashbox' => $baseDir . '/app/Cashbox.php',
     'App\\Citizenship' => $baseDir . '/app/Citizenship.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
@@ -22,6 +23,7 @@ return array(
     'App\\Http\\Controllers\\Auth\\ResetPasswordController' => $baseDir . '/app/Http/Controllers/Auth/ResetPasswordController.php',
     'App\\Http\\Controllers\\Auth\\VerificationController' => $baseDir . '/app/Http/Controllers/Auth/VerificationController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
+    'App\\Http\\Controllers\\CreditController' => $baseDir . '/app/Http/Controllers/CreditController.php',
     'App\\Http\\Controllers\\DeleteController' => $baseDir . '/app/Http/Controllers/DeleteController.php',
     'App\\Http\\Controllers\\DepositController' => $baseDir . '/app/Http/Controllers/DepositController.php',
     'App\\Http\\Controllers\\EditingController' => $baseDir . '/app/Http/Controllers/EditingController.php',
