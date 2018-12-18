@@ -211,13 +211,13 @@ class UserInfoController extends Controller
 
     public function delete(Request $request)
     {
-        $message = 'Delete successful';
         try {
-            UserInformation::destroy($request->delete_user);
+            $message = 'Delete successful';
+            UserInformation::destroy($request->input('delete_user'));
         } catch (\Exception $exception) {
-            $message = 'Something went wrong.';
+            $message = 'Something went wrong. Error with code: '.$exception->getCode();
         }
-        return redirect()->route('welcome')->with('message', $message);
+        return $message;
     }
 
     public function getUserInfoByID($id)

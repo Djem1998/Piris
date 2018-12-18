@@ -172,6 +172,29 @@ $(document).ready(function () {
         $('#editingUser').removeClass('active');
         $('#viewAddDeposit').removeClass('active');
         $('#viewTerminal').removeClass('active');
+        $('.button').on('click', function (e) {
+            e.preventDefault();
+            let user;
+            let isDelete = confirm('Are you want to delete this user?');
+            if (isDelete){
+                user = $('#delete_user option:selected').val();
+                $.ajax({
+                    url: "/delete",
+                    method: "POST",
+                    cache:false,
+                    data: {
+                        delete_user: user,
+                    },
+                    success:function (response) {
+                        if (response === 'Delete successful') {
+                            window.location.reload()
+                        } else {
+                            swal('Error', response, 'error');
+                        }
+                    }
+                })
+            }
+        })
     } else if (pathname === '/editingUser') {
         $('#viewAddCredit').removeClass('active');
         $('#addUser').removeClass('active');
