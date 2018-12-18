@@ -722,7 +722,7 @@ $(document).ready(function () {
             if ($('#card_number').val() != '' && $('#pin_code').val() != '') {
                 $('#enter_card').attr('disabled', false)
             }
-            if ($('#operation_type option:selected').val() == 'getMoneyFromCredit') {
+            if (($('#operation_type option:selected').val() == 'getMoneyFromCredit') || ($('#operation_type option:selected').val() == 'getPercentFromInterestAccount')) {
                 $('#sum').fadeIn()
             }else {
                 $('#sum').fadeOut()

@@ -163,7 +163,7 @@ class DepositController extends Controller
             //info
             $operation_name = 'add to cashbox';
             $info = $this->getInfoAboutCashbox();
-            $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+            $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
             $this->addOperation($operation_name, $operation, $user_info_id);
         } catch (\Exception $exception) {
             return $exception->getCode();
@@ -220,7 +220,7 @@ class DepositController extends Controller
         //info
         $operation_name = 'add to credit cashbox';
         $info = $this->getInfoAboutCashbox();
-        $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
         $this->addOperation($operation_name, $operation, $user_info_id);
         //add to credit current account
         $result = $this->getBalanceCurrentAccount();
@@ -231,7 +231,7 @@ class DepositController extends Controller
         //info
         $operation_name = 'add to credit current account';
         $info = $this->getInfoAboutCurrentAccount();
-        $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
         $this->addOperation($operation_name, $operation, $user_info_id);
     }
 
@@ -255,7 +255,7 @@ class DepositController extends Controller
         //info
         $operation_name = 'add to debit current account';
         $info = $this->getInfoAboutCurrentAccount();
-        $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
         $this->addOperation($operation_name, $operation, $user_info_id);
         //add to credit bank
         $result = $this->getInfoAboutBank();
@@ -266,7 +266,7 @@ class DepositController extends Controller
         //info
         $operation_name = 'add to credit bank fund';
         $info = $this->getInfoAboutBank();
-        $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
         $this->addOperation($operation_name, $operation, $user_info_id);
     }
 
@@ -360,9 +360,9 @@ class DepositController extends Controller
         return $result;
     }
 
-    private function getBalanceInterestAccount()
+    private function getBalanceInterestAccount($id)
     {
-        $interest_account = InterestAccount::all();
+        $interest_account = InterestAccount::where('id', $id)->get();
         foreach ($interest_account as $value) {
             $result = array('id' => $value->id, 'balance' => $value->credit - $value->debit, 'credit' => $value->credit);
         }
@@ -402,10 +402,10 @@ class DepositController extends Controller
         //info
         $operation_name = 'add to debit bank fund';
         $info = $this->getInfoAboutBank();
-        $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
         $this->addOperation($operation_name, $operation, $user_info_id);
         //add to credit interest account
-        $result = $this->getBalanceInterestAccount();
+        $result = $this->getBalanceInterestAccount($interest_account_id);
         InterestAccount::where('id', $interest_account_id)->update([
             'credit' => $result['credit'] + ($sum / 100) * $percent,
             'balance' => (($sum / 100) * $percent) + $result['balance'],
@@ -413,7 +413,7 @@ class DepositController extends Controller
         //info
         $operation_name = 'add to credit interest account';
         $info = $this->getInfoAboutInterestAccount();
-        $operation = 'Result: credit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
         $this->addOperation($operation_name, $operation, $user_info_id);
     }
 
@@ -442,6 +442,67 @@ class DepositController extends Controller
             $result = 'Something went wrong. Error with code: ' . $exception->getCode();
         }
         return $result;
+    }
+
+    public function getPercentFromInterestAccount(Request $request){
+        try{
+            $card_number = $request->input('card_num');
+            $sum =(float)$request->input('sum');
+            $cards = Card::where('card_num', $card_number)->get();
+            foreach ($cards as $card) {
+                $interest_account_number = $card->interest_num;
+            }
+            $interest_accounts = InterestAccount::where('account_number', $interest_account_number)->get();
+            foreach ($interest_accounts as $interest_account) {
+                $interest_account_id = $interest_account->id;
+            }
+            $accounts = AccountsChart::where('interest_accounts_id', $interest_account_id)->get();
+            foreach ($accounts as $account) {
+                $user_info_id = $account->user_informations_id;
+            }
+            $result = $this->getBalanceInterestAccount($interest_account_id);
+            if ($result['balance'] >= $sum){
+                //add to debit interest account
+                InterestAccount::where('id', $interest_account_id)->update([
+                    'debit' => $sum,
+                    'balance' => $result['balance']-$sum,
+                ]);
+                //info
+                $operation_name = 'add to debit interest account';
+                $info = $this->getInfoAboutInterestAccount();
+                $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+                $this->addOperation($operation_name, $operation, $user_info_id);
+                //add to debit cashbox
+                $result = $this->getBalanceCashbox();
+                Cashbox::where('id', $result['id'])->update([
+                    'debit' => $sum,
+                    'balance' => $sum - $result['balance'],
+                ]);
+                //info
+                $operation_name = 'add to debit cashbox';
+                $info = $this->getInfoAboutCashbox();
+                $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+                $this->addOperation($operation_name, $operation, $user_info_id);
+                //transfer in cashbox debit to credit
+                $result = $this->getBalanceCashbox();
+                Cashbox::where('id', $result['id'])->update([
+                    'credit' => $sum,
+                    'balance' => $result['balance'] - $sum,
+                ]);
+                //info
+                $operation_name = 'add to credit cashbox';
+                $info = $this->getInfoAboutCashbox();
+                $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+                $this->addOperation($operation_name, $operation, $user_info_id);
+                $message = 'Get your money.';
+            } else {
+                $message = 'Insufficient funds.';
+            }
+            return $message;
+        } catch (\Exception $exception){
+            $message = 'Something went wrong. Error with code: ' . $exception->getCode();
+            return $message;
+        }
     }
 
     public function getSum($currency, $depositName, $duration)

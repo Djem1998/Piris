@@ -27,6 +27,7 @@
                         <select id="operation_type" name="operation_type" class="form-control">
                             <option value="getMoneyFromCredit">Get money from credit</option>
                             <option value="getAccountBalance">Account balance</option>
+                            <option value="getPercentFromInterestAccount">Get percent from account</option>
                             <option value="cancel">Cancel</option>
                         </select>
                     </div>

@@ -50,3 +50,4 @@ Route::get('/viewTerminal', 'TerminalController@index')->name('viewTerminal');
 Route::post('/checkAutorization', 'TerminalController@checkAutorization')->name('checkAutorization');
 Route::post('/getMoneyFromCredit', 'TerminalController@getMoneyFromCredit')->name('getMoneyFromCredit');
 Route::post('/getAccountBalance', 'TerminalController@getAccountBalance')->name('getAccountBalance');
+Route::post('/getPercentFromInterestAccount', 'DepositController@getPercentFromInterestAccount')->name('getPercentFromInterestAccount');
