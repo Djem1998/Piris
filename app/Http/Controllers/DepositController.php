@@ -444,10 +444,11 @@ class DepositController extends Controller
         return $result;
     }
 
-    public function getPercentFromInterestAccount(Request $request){
-        try{
+    public function getPercentFromInterestAccount(Request $request)
+    {
+        try {
             $card_number = $request->input('card_num');
-            $sum =(float)$request->input('sum');
+            $sum = (float)$request->input('sum');
             $cards = Card::where('card_num', $card_number)->get();
             foreach ($cards as $card) {
                 $interest_account_number = $card->interest_num;
@@ -461,11 +462,11 @@ class DepositController extends Controller
                 $user_info_id = $account->user_informations_id;
             }
             $result = $this->getBalanceInterestAccount($interest_account_id);
-            if ($result['balance'] >= $sum){
+            if ($result['balance'] >= $sum) {
                 //add to debit interest account
                 InterestAccount::where('id', $interest_account_id)->update([
                     'debit' => $sum,
-                    'balance' => $result['balance']-$sum,
+                    'balance' => $result['balance'] - $sum,
                 ]);
                 //info
                 $operation_name = 'add to debit interest account';
@@ -499,8 +500,133 @@ class DepositController extends Controller
                 $message = 'Insufficient funds.';
             }
             return $message;
-        } catch (\Exception $exception){
-            $message = 'Something went wrong. Error with code: ' . $exception->getCode();
+        } catch (\Exception $exception) {
+            $message = 'Something went wrong.';
+            return $message;
+        }
+    }
+
+    private function endingDeposit($deposit_type_id, $current_account_id, $user_info_id, $account_id)
+    {
+        //get sum
+        $accounts = AccountsChart::where('id', $account_id)->get();
+        foreach ($accounts as $account) {
+            $sum = $account->sum;
+        }
+        //check currency
+        $deposit_types = DepositType::where('id', $deposit_type_id)->get();
+        foreach ($deposit_types as $deposit_type) {
+            $currency = $deposit_type->currency;
+            $percent = (float)(str_replace('%', '', $deposit_type->percent));
+        }
+        $sum2 = $this->checkCurrency($sum, $currency);
+        //add to debit bank
+        $result = $this->getInfoAboutBank();
+        BankFund::where('id', $result['id'])->update([
+            'debit' => $result['debit'] + $sum2,
+            'balance' => $result['credit'] - ($result['debit'] + $sum2),
+        ]);
+        //info
+        $operation_name = 'add to debit bank fund';
+        $info = $this->getInfoAboutBank();
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $this->addOperation($operation_name, $operation, $user_info_id);
+        //add to credit current account
+        $result = $this->getBalanceCurrentAccountByID($current_account_id);
+        CurrentAccount::where('id', $result['id'])->update([
+            'credit' => $sum,
+            'balance' => $sum - $result['balance'],
+        ]);
+        //info
+        $operation_name = 'add to credit current account';
+        $info = $this->getInfoAboutCurrentAccountByID($current_account_id);
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $this->addOperation($operation_name, $operation, $user_info_id);
+    }
+
+    private function getBalanceCurrentAccountByID($id)
+    {
+        $current_account = CurrentAccount::where('id', $id)->get();
+        foreach ($current_account as $value) {
+            $result = array('id' => $value->id, 'balance' => $value->credit - $value->debit);
+        }
+        return $result;
+    }
+
+    private function getInfoAboutCurrentAccountByID($id)
+    {
+        $current_account = CurrentAccount::where('id', $id)->get();
+        foreach ($current_account as $value) {
+            $result = array('credit' => $value->credit, 'debit' => $value->debit, 'balance' => $value->balance);
+        }
+
+        return $result;
+    }
+
+    private function transferToCashbox($current_account_id, $user_info_id, $account_id)
+    {
+        //get sum
+        $accounts = AccountsChart::where('id', $account_id)->get();
+        foreach ($accounts as $account) {
+            $sum = $account->sum;
+        }
+        //add to debit current account
+        $result = $this->getBalanceCurrentAccountByID($current_account_id);
+        CurrentAccount::where('id', $result['id'])->update([
+            'debit' => $sum,
+            'balance' => $result['balance'] - $sum,
+        ]);
+        //info
+        $operation_name = 'add to debit current account';
+        $info = $this->getInfoAboutCurrentAccountByID($current_account_id);
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $this->addOperation($operation_name, $operation, $user_info_id);
+        //add to debit cashbox
+        $result = $this->getBalanceCashbox();
+        Cashbox::where('id', $result['id'])->update([
+            'debit' => $sum,
+            'balance' => $sum - $result['balance'],
+        ]);
+        //info
+        $operation_name = 'add to cashbox';
+        $info = $this->getInfoAboutCashbox();
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $this->addOperation($operation_name, $operation, $user_info_id);
+        //transfer in cashbox debit to credit
+        $result = $this->getBalanceCashbox();
+        Cashbox::where('id', $result['id'])->update([
+            'credit' => $sum,
+            'balance' => $result['balance'] - $sum,
+        ]);
+        //info
+        $operation_name = 'add to credit cashbox';
+        $info = $this->getInfoAboutCashbox();
+        $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
+        $this->addOperation($operation_name, $operation, $user_info_id);
+    }
+
+    public function endDeposit(Request $request)
+    {
+        try {
+            $current_account_number = $request->input('card_num');
+            $current_accounts = CurrentAccount::where('account_number', $current_account_number)->get();
+            foreach ($current_accounts as $current_account) {
+                $current_account_id = $current_account->id;
+            }
+            $accounts = AccountsChart::where('current_accounts_id', $current_account_id)->get();
+            foreach ($accounts as $account) {
+                $deposit_type_id = $account->deposit_types_id;
+                $user_info_id = $account->user_informations_id;
+                $account_id = $account->id;
+            }
+            $this->endingDeposit($deposit_type_id, $current_account_id, $user_info_id, $account_id);
+            $this->transferToCashbox($current_account_id, $user_info_id, $account_id);
+            CurrentAccount::destroy($current_account_id);
+            Card::where('card_num', $current_account_number)->delete();
+            $message = 'Deposit end. Card deleted.';
+            return $message;
+        } catch (\Exception $exception) {
+            $message = 'Something went wrong.';
             return $message;
         }
     }

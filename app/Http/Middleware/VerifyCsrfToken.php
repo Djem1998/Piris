@@ -49,5 +49,6 @@ class VerifyCsrfToken extends Middleware
         "http://127.0.0.1:8000/getAccountBalance",
         "http://127.0.0.1:8000/delete",
         "http://127.0.0.1:8000/getPercentFromInterestAccount",
+        "http://127.0.0.1:8000/endDeposit",
     ];
 }

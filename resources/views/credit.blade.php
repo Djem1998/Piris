@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="title-bank text-center">Idea Bank</h1>
+        <h1 class="title-bank text-center">Piris Bank</h1>
         <form method="post" action="{{ route('addCredit') }}">
             @csrf
             @if ($errors->any())

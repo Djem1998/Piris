@@ -17,17 +17,5 @@
         @else
             <div class="empty text-center">Have`n got users into database.</div>
         @endif
-        {{--        @if(isset($message))
-                    <div>{{ $message }}</div>
-                    @if($message != 'Something went wrong.')
-                        <script>
-                            swal('Success', 'Everything went well.', 'success')
-                        </script>
-                    @else
-                        <script>
-                            swal('Error', 'Something went wrong.', 'error')
-                        </script>
-                    @endif
-                @endif--}}
     </div>
 @endsection
