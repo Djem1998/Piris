@@ -28,10 +28,10 @@ $(document).ready(function () {
                         url: "/bankDayClosingCredit",
                         method: "GET",
                         cache: false,
-                        success:function (response) {
+                        success: function (response) {
                             if (response == 'Operation successful.') {
                                 swal('Success', 'Deposit and Credit operations successful.', 'success')
-                            }else {
+                            } else {
                                 swal('Error', 'Deposit operation successful, Credit operation failed.', 'error')
                             }
                         }
@@ -176,16 +176,16 @@ $(document).ready(function () {
             e.preventDefault();
             let user;
             let isDelete = confirm('Are you want to delete this user?');
-            if (isDelete){
+            if (isDelete) {
                 user = $('#delete_user option:selected').val();
                 $.ajax({
                     url: "/delete",
                     method: "POST",
-                    cache:false,
+                    cache: false,
                     data: {
                         delete_user: user,
                     },
-                    success:function (response) {
+                    success: function (response) {
                         if (response === 'Delete successful') {
                             window.location.reload()
                         } else {
@@ -450,12 +450,12 @@ $(document).ready(function () {
                     token = response.substring(0, 1);
                     if (token == '+') {
                         if (amount < parseFloat(count)) {
-                            swal('Error', 'Amount must be more than '+count, 'error');
+                            swal('Error', 'Amount must be more than ' + count, 'error');
                             $('#amount').val('')
                         }
-                    }else {
+                    } else {
                         if (amount > parseFloat(count)) {
-                            swal('Error', 'Amount must be less than '+count, 'error');
+                            swal('Error', 'Amount must be less than ' + count, 'error');
                             $('#amount').val('')
                         }
                     }
@@ -508,7 +508,7 @@ $(document).ready(function () {
                 url: '/addDeposit',
                 method: "POST",
                 cache: false,
-                data:{
+                data: {
                     select_user: $('#select_user option:selected').val(),
                     current_account: $('#current_account').val(),
                     interest_account: $('#interest_account').val(),
@@ -519,10 +519,10 @@ $(document).ready(function () {
                     amount: $('#amount').val(),
                     date_start: $('#date_start').val(),
                 },
-                success:function (response) {
+                success: function (response) {
                     if (response == 'Something went wrong.') {
                         swal('Error', response, 'error')
-                    } else{
+                    } else {
                         swal('Success', response, 'success')
                     }
                 }
@@ -629,12 +629,12 @@ $(document).ready(function () {
                     token = response.substring(0, 1);
                     if (token == '+') {
                         if (amount < parseFloat(count)) {
-                            swal('Error', 'Amount must be more than '+count, 'error');
+                            swal('Error', 'Amount must be more than ' + count, 'error');
                             $('#amount').val('')
                         }
-                    }else {
+                    } else {
                         if (amount > parseFloat(count)) {
-                            swal('Error', 'Amount must be less than '+count, 'error');
+                            swal('Error', 'Amount must be less than ' + count, 'error');
                             $('#amount').val('')
                         }
                     }
@@ -687,7 +687,7 @@ $(document).ready(function () {
                 url: '/addCredit',
                 method: "POST",
                 cache: false,
-                data:{
+                data: {
                     select_user: $('#select_user option:selected').val(),
                     current_account: $('#current_account').val(),
                     interest_account: $('#interest_account').val(),
@@ -698,16 +698,16 @@ $(document).ready(function () {
                     amount: $('#amount').val(),
                     date_start: $('#date_start').val(),
                 },
-                success:function (response) {
+                success: function (response) {
                     if (response == 'Something went wrong.') {
                         swal('Error', response, 'error')
-                    } else{
+                    } else {
                         swal('Success', response, 'success')
                     }
                 }
             })
         });
-    } else if(pathname === '/viewTerminal'){
+    } else if (pathname === '/viewTerminal') {
         $('.operations').fadeOut();
         $('.true').fadeIn();
         let card_number;
@@ -723,15 +723,15 @@ $(document).ready(function () {
                 $('#enter_card').attr('disabled', false)
             }
             if (($('#operation_type option:selected').val() == 'getMoneyFromCredit') || ($('#operation_type option:selected').val() == 'getPercentFromInterestAccount')) {
-                $('#sum').fadeIn()
-            }else {
-                $('#sum').fadeOut()
+                $('.sum').fadeIn()
+            } else {
+                $('.sum').fadeOut()
             }
         });
         let count = 0;
         let num;
         $('#enter_card').on('click', function (e) {
-            if (count >= 2 && num == $('#card_number').val()){
+            if (count >= 2 && num == $('#card_number').val()) {
                 $('#enter_card').attr('disabled', true)
                 $('#card_number').val('').attr('disabled', true);
                 $('#pin_code').val('').attr('disabled', true);
@@ -739,17 +739,24 @@ $(document).ready(function () {
             }
             e.preventDefault();
             card_number = $('#card_number').val();
+            if (card_number.substr(0, 4) == '3014') {
+                $('.deposit-option').fadeIn();
+                $('.credit-option').fadeOut();
+            } else {
+                $('.credit-option').fadeIn();
+                $('.deposit-option').fadeOut();
+            }
             pin_code = $('#pin_code').val();
             $.ajax({
                 url: "/checkAutorization",
                 method: "POST",
-                data:{
+                data: {
                     card_number: card_number,
                     pin_code: pin_code,
                 },
                 cache: false,
                 success: function (response) {
-                    if (response == 0){
+                    if (response == 0) {
                         swal('Error', 'Check number and pin code card', 'error');
                         ++count;
                         num = card_number;
@@ -764,10 +771,10 @@ $(document).ready(function () {
                             e.preventDefault();
                             if ($('#operation_type option:selected').val() != 'cancel') {
                                 $.ajax({
-                                    url: "/"+$('#operation_type option:selected').val()+"",
+                                    url: "/" + $('#operation_type option:selected').val() + "",
                                     method: "POST",
                                     cache: false,
-                                    data:{
+                                    data: {
                                         card_num: card_number,
                                         sum: $('#sum').val(),
                                     },
@@ -776,15 +783,22 @@ $(document).ready(function () {
                                             swal('Error', response, 'error');
                                         } else {
                                             swal('Success', response, 'success');
-                                            $('.operations').fadeOut();
-                                            $('.true').fadeIn();
+                                            if (response == 'Deposit end. Card deleted.') {
+                                                swal('Success', response, 'success')
+                                                setTimeout(function (e) {
+                                                    window.location.reload()
+                                                }, 5000)
+                                            } else {
+                                                $('.operations').fadeOut();
+                                                $('.true').fadeIn();
+                                            }
                                         }
                                     }
                                 })
                             } else {
                                 $('.operations').fadeOut();
                                 $('.true').fadeIn();
-                                $('#sum').fadeOut()
+                                $('.sum').fadeOut()
                             }
                         })
                     }

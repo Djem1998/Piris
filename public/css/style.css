@@ -128,3 +128,15 @@ input {
     transform: translate(-25%, 15%);
     width: 100%;
 }
+
+.deposit-option {
+    display: none;
+}
+
+.credit-option {
+    display: none;
+}
+
+.sum {
+    display: none;
+}

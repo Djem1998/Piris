@@ -12,28 +12,30 @@
 */
 
 Auth::routes();
-Route::get('/', 'WelcomeController@index')->name('welcome');
-Route::get('/addUser', 'HomeController@index')->name('addUser');
-Route::post('/add', 'UserInfoController@add')->name('add');
-Route::post('/checkUser', 'UserInfoController@checkUserName')->name('checkUser');
-Route::post('/checkUserPassport', 'UserInfoController@checkUserPassport')->name('checkUserPassport');
-Route::post('/checkIdentificationNumber', 'UserInfoController@checkIdentificationNumber')->name('checkIdentificationNumber');
-Route::get('/deleteUser', 'DeleteController@index')->name('deleteUser');
-Route::post('/delete', 'UserInfoController@delete')->name('delete');
-Route::get('/editingUser', 'EditingController@index')->name('editingUser');
-Route::get('/getUserInfoByID/{id}', 'UserInfoController@getUserInfoByID')->name('getUserInfoByID');
-Route::get('/getCitizenship', 'EditingController@getCitizenshipTable')->name('getCitizenship');
-Route::get('/getDisability', 'EditingController@getDisabilityTable')->name('getDisability');
-Route::get('/getFamilyPosition', 'EditingController@getFamilyPositionTable')->name('getFamilyPosition');
-Route::get('/getResidenceCity', 'EditingController@getResidenceCityTable')->name('getResidenceCity');
-Route::get('/getRegistrationCity', 'EditingController@getRegistrationCityTable')->name('getRegistrationCity');
-Route::post('/update', 'UserInfoController@update')->name('update');
-Route::get('/viewAddDeposit', 'DepositController@index')->name('viewAddDeposit');
-Route::get('/getDuration/{currency}/{depositName}', 'DepositController@getDuration')->name('getDuration');
-Route::get('/getPercent/{currency}/{depositName}/{duration}', 'DepositController@getPercent')->name('getPercent');
-Route::get('/getSum/{currency}/{depositName}/{duration}', 'DepositController@getSum')->name('getSum');
-Route::get('/getCountAccounts/{id}', 'DepositController@getCountAccounts')->name('getCountAccounts');
-Route::post('/addDeposit', 'DepositController@addDeposit')->name('addDeposit');
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/', 'WelcomeController@index')->name('welcome');
+    Route::get('/addUser', 'HomeController@index')->name('addUser');
+    Route::post('/add', 'UserInfoController@add')->name('add');
+    Route::post('/checkUser', 'UserInfoController@checkUserName')->name('checkUser');
+    Route::post('/checkUserPassport', 'UserInfoController@checkUserPassport')->name('checkUserPassport');
+    Route::post('/checkIdentificationNumber', 'UserInfoController@checkIdentificationNumber')->name('checkIdentificationNumber');
+    Route::get('/deleteUser', 'DeleteController@index')->name('deleteUser');
+    Route::post('/delete', 'UserInfoController@delete')->name('delete');
+    Route::get('/editingUser', 'EditingController@index')->name('editingUser');
+    Route::get('/getUserInfoByID/{id}', 'UserInfoController@getUserInfoByID')->name('getUserInfoByID');
+    Route::get('/getCitizenship', 'EditingController@getCitizenshipTable')->name('getCitizenship');
+    Route::get('/getDisability', 'EditingController@getDisabilityTable')->name('getDisability');
+    Route::get('/getFamilyPosition', 'EditingController@getFamilyPositionTable')->name('getFamilyPosition');
+    Route::get('/getResidenceCity', 'EditingController@getResidenceCityTable')->name('getResidenceCity');
+    Route::get('/getRegistrationCity', 'EditingController@getRegistrationCityTable')->name('getRegistrationCity');
+    Route::post('/update', 'UserInfoController@update')->name('update');
+    Route::get('/viewAddDeposit', 'DepositController@index')->name('viewAddDeposit');
+    Route::get('/getDuration/{currency}/{depositName}', 'DepositController@getDuration')->name('getDuration');
+    Route::get('/getPercent/{currency}/{depositName}/{duration}', 'DepositController@getPercent')->name('getPercent');
+    Route::get('/getSum/{currency}/{depositName}/{duration}', 'DepositController@getSum')->name('getSum');
+    Route::get('/getCountAccounts/{id}', 'DepositController@getCountAccounts')->name('getCountAccounts');
+    Route::post('/addDeposit', 'DepositController@addDeposit')->name('addDeposit');
+});
 Route::get('/bankDayClosing', 'DepositController@bankDayClosing')->name('bankDayClosing');
 Route::get('/getName', 'DepositController@getName')->name('getName');
 Route::get('/getCurrency', 'DepositController@getCurrency')->name('getCurrency');
@@ -51,3 +53,4 @@ Route::post('/checkAutorization', 'TerminalController@checkAutorization')->name(
 Route::post('/getMoneyFromCredit', 'TerminalController@getMoneyFromCredit')->name('getMoneyFromCredit');
 Route::post('/getAccountBalance', 'TerminalController@getAccountBalance')->name('getAccountBalance');
 Route::post('/getPercentFromInterestAccount', 'DepositController@getPercentFromInterestAccount')->name('getPercentFromInterestAccount');
+Route::post('/endDeposit', 'DepositController@endDeposit')->name('endDeposit');
