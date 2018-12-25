@@ -722,7 +722,7 @@ $(document).ready(function () {
             if ($('#card_number').val() != '' && $('#pin_code').val() != '') {
                 $('#enter_card').attr('disabled', false)
             }
-            if (($('#operation_type option:selected').val() == 'getMoneyFromCredit') || ($('#operation_type option:selected').val() == 'getPercentFromInterestAccount')) {
+            if (($('#operation_type option:selected').val() == 'getMoneyFromCredit') || ($('#operation_type option:selected').val() == 'getPercentFromInterestAccount') || ($('#operation_type option:selected').val() == 'interestPayment')) {
                 $('.sum').fadeIn()
             } else {
                 $('.sum').fadeOut()
@@ -767,6 +767,20 @@ $(document).ready(function () {
                         $('.true').fadeOut();
                         $('#card_number').val('');
                         $('#pin_code').val('');
+                        $('#operation_type').on('change', function (e) {
+                            if (($('#operation_type option:selected').val() == 'interestPayment')){
+                                $.ajax({
+                                    url: "/getPercentSumCredit/"+card_number,
+                                    method: "GET",
+                                    cache: false,
+                                    success: function (response) {
+                                        $('#sum').val(response).prop('disabled', true)
+                                    }
+                                });
+                            } else {
+                                $('#sum').prop('disabled', false).val('')
+                            }
+                        });
                         $('#enter').on('click', function (e) {
                             e.preventDefault();
                             if ($('#operation_type option:selected').val() != 'cancel') {

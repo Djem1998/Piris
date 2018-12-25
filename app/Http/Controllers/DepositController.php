@@ -147,7 +147,7 @@ class DepositController extends Controller
     {
         $casboxes = Cashbox::all();
         foreach ($casboxes as $value) {
-            $result = array('id' => $value->id, 'balance' => $value->debit - $value->credit);
+            $result = array('id' => $value->id, 'balance' => $value->debit - $value->credit, 'credit' => $value->credit, 'debit' => $value->debit);
         }
         return $result;
     }
@@ -157,7 +157,7 @@ class DepositController extends Controller
         try {
             $result = $this->getBalanceCashbox();
             Cashbox::where('id', $result['id'])->update([
-                'debit' => $sum,
+                'debit' => $result['debit'] + $sum,
                 'balance' => $sum - $result['balance'],
             ]);
             //info
@@ -194,7 +194,7 @@ class DepositController extends Controller
     {
         $current_account = CurrentAccount::all();
         foreach ($current_account as $value) {
-            $result = array('id' => $value->id, 'balance' => $value->credit - $value->debit);
+            $result = array('id' => $value->id, 'balance' => $value->credit - $value->debit, 'credit' => $value->credit, 'debit' =>$value->debit);
         }
         return $result;
     }
@@ -214,7 +214,7 @@ class DepositController extends Controller
         //transfer in cashbox debit to credit
         $result = $this->getBalanceCashbox();
         Cashbox::where('id', $result['id'])->update([
-            'credit' => $sum,
+            'credit' => $result['credit'] + $sum,
             'balance' => $result['balance'] - $sum,
         ]);
         //info
@@ -225,7 +225,7 @@ class DepositController extends Controller
         //add to credit current account
         $result = $this->getBalanceCurrentAccount();
         CurrentAccount::where('id', $result['id'])->update([
-            'credit' => $sum,
+            'credit' => $result['credit'] + $sum,
             'balance' => $sum - $result['balance'],
         ]);
         //info
@@ -249,7 +249,7 @@ class DepositController extends Controller
         //add to debit current account
         $result = $this->getBalanceCurrentAccount();
         CurrentAccount::where('id', $result['id'])->update([
-            'debit' => $sum,
+            'debit' => $result['debit'] + $sum,
             'balance' => $result['balance'] - $sum,
         ]);
         //info
@@ -369,9 +369,9 @@ class DepositController extends Controller
         return $result;
     }
 
-    private function getInfoAboutInterestAccount()
+    private function getInfoAboutInterestAccount($id)
     {
-        $interest_account = InterestAccount::all();
+        $interest_account = InterestAccount::where('id', $id)->get();
         foreach ($interest_account as $value) {
             $result = array('credit' => $value->credit, 'debit' => $value->debit, 'balance' => $value->balance);
         }
@@ -412,7 +412,7 @@ class DepositController extends Controller
         ]);
         //info
         $operation_name = 'add to credit interest account';
-        $info = $this->getInfoAboutInterestAccount();
+        $info = $this->getInfoAboutInterestAccount($interest_account_id);
         $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
         $this->addOperation($operation_name, $operation, $user_info_id);
     }
@@ -470,13 +470,13 @@ class DepositController extends Controller
                 ]);
                 //info
                 $operation_name = 'add to debit interest account';
-                $info = $this->getInfoAboutInterestAccount();
+                $info = $this->getInfoAboutInterestAccount($interest_account_id);
                 $operation = 'Result: deposit: ' . $info['credit'] . ' ;debit: ' . $info['debit'] . ' ;balance: ' . $info['balance'];
                 $this->addOperation($operation_name, $operation, $user_info_id);
                 //add to debit cashbox
                 $result = $this->getBalanceCashbox();
                 Cashbox::where('id', $result['id'])->update([
-                    'debit' => $sum,
+                    'debit' => $result['debit'] + $sum,
                     'balance' => $sum - $result['balance'],
                 ]);
                 //info
@@ -487,7 +487,7 @@ class DepositController extends Controller
                 //transfer in cashbox debit to credit
                 $result = $this->getBalanceCashbox();
                 Cashbox::where('id', $result['id'])->update([
-                    'credit' => $sum,
+                    'credit' => $result['credit'] + $sum,
                     'balance' => $result['balance'] - $sum,
                 ]);
                 //info
@@ -534,8 +534,8 @@ class DepositController extends Controller
         //add to credit current account
         $result = $this->getBalanceCurrentAccountByID($current_account_id);
         CurrentAccount::where('id', $result['id'])->update([
-            'credit' => $sum,
-            'balance' => $sum - $result['balance'],
+            'credit' => $result['credit'] + $sum,
+            'balance' => $result['credit'] + $sum - $result['debit'],
         ]);
         //info
         $operation_name = 'add to credit current account';
@@ -548,7 +548,7 @@ class DepositController extends Controller
     {
         $current_account = CurrentAccount::where('id', $id)->get();
         foreach ($current_account as $value) {
-            $result = array('id' => $value->id, 'balance' => $value->credit - $value->debit);
+            $result = array('id' => $value->id, 'balance' => $value->credit - $value->debit, 'credit' => $value->credit, 'debit' => $value->debit);
         }
         return $result;
     }
@@ -573,8 +573,8 @@ class DepositController extends Controller
         //add to debit current account
         $result = $this->getBalanceCurrentAccountByID($current_account_id);
         CurrentAccount::where('id', $result['id'])->update([
-            'debit' => $sum,
-            'balance' => $result['balance'] - $sum,
+            'debit' => $result['debit'] + $sum,
+            'balance' => $result['credit'] - $sum - $result['debit'],
         ]);
         //info
         $operation_name = 'add to debit current account';
@@ -584,8 +584,8 @@ class DepositController extends Controller
         //add to debit cashbox
         $result = $this->getBalanceCashbox();
         Cashbox::where('id', $result['id'])->update([
-            'debit' => $sum,
-            'balance' => $sum - $result['balance'],
+            'debit' => $result['debit'] + $sum,
+            'balance' => $result['debit'] + $sum - $result['credit'],
         ]);
         //info
         $operation_name = 'add to cashbox';
@@ -595,8 +595,8 @@ class DepositController extends Controller
         //transfer in cashbox debit to credit
         $result = $this->getBalanceCashbox();
         Cashbox::where('id', $result['id'])->update([
-            'credit' => $sum,
-            'balance' => $result['balance'] - $sum,
+            'credit' => $result['credit'] + $sum,
+            'balance' => $result['debit'] - $sum - $result['credit'],
         ]);
         //info
         $operation_name = 'add to credit cashbox';
@@ -618,17 +618,18 @@ class DepositController extends Controller
                 $deposit_type_id = $account->deposit_types_id;
                 $user_info_id = $account->user_informations_id;
                 $account_id = $account->id;
+                $interest_account_id = $account->interest_accounts_id;
             }
             $this->endingDeposit($deposit_type_id, $current_account_id, $user_info_id, $account_id);
             $this->transferToCashbox($current_account_id, $user_info_id, $account_id);
             CurrentAccount::destroy($current_account_id);
+            InterestAccount::destroy($interest_account_id);
             Card::where('card_num', $current_account_number)->delete();
             $message = 'Deposit end. Card deleted.';
-            return $message;
         } catch (\Exception $exception) {
             $message = 'Something went wrong.';
-            return $message;
         }
+        return $message;
     }
 
     public function getSum($currency, $depositName, $duration)

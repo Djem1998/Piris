@@ -12,7 +12,7 @@
 */
 
 Auth::routes();
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth', 'accessDenied']], function () {
     Route::get('/', 'WelcomeController@index')->name('welcome');
     Route::get('/addUser', 'HomeController@index')->name('addUser');
     Route::post('/add', 'UserInfoController@add')->name('add');
@@ -54,3 +54,6 @@ Route::post('/getMoneyFromCredit', 'TerminalController@getMoneyFromCredit')->nam
 Route::post('/getAccountBalance', 'TerminalController@getAccountBalance')->name('getAccountBalance');
 Route::post('/getPercentFromInterestAccount', 'DepositController@getPercentFromInterestAccount')->name('getPercentFromInterestAccount');
 Route::post('/endDeposit', 'DepositController@endDeposit')->name('endDeposit');
+Route::get('/getPercentSumCredit/{card_num}', 'CreditController@getPercentSumCredit')->name('getPercentSumCredit');
+Route::post('/interestPayment', 'CreditController@interestPayment')->name('interestPayment');
+Route::post('/endCredit', 'CreditController@endCredit')->name('endCredit');

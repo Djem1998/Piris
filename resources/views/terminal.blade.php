@@ -26,17 +26,19 @@
                            class="col-md-12 col-form-label text-md-center">{{ __('Select operation type:') }}</label>
                     <select id="operation_type" name="operation_type" class="form-control">
                         <option value="getMoneyFromCredit" class="credit-option">Get money from credit</option>
-                        <option value="getAccountBalance">Account balance</option>
+                        <option value="interestPayment" class="credit-option">Interest payment</option>
+                        <option value="endCredit" class="credit-option">End credit</option>
                         <option value="getPercentFromInterestAccount" class="deposit-option">Get percent from account
                         </option>
                         <option value="endDeposit" class="deposit-option">End deposit</option>
+                        <option value="getAccountBalance">Account balance</option>
                         <option value="cancel">Cancel</option>
                     </select>
                 </div>
                 <div class="form-group col-md-6 sum">
                     <label for="sum"
                            class="col-md-12 col-form-label text-md-center">{{ __('Enter sum') }}</label>
-                    <input id="sum" name="sum" class="form-control" type="number">
+                    <input id="sum" name="sum" class="form-control" type="text">
                 </div>
                 <div class="form-group col-md-6">
                     <button class="form-control btn-success" id="enter">Enter</button>
